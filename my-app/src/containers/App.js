@@ -5,6 +5,13 @@ import './App.css'
 import Scroll from '../components/Scroll'
 import ErrorBoundry from '../components/ErrorBoundry'
 
+
+
+// function App() {
+//   const [robots] = useState([]);
+//   const [searchField] = useState('');
+// }
+
 class App extends Component{
     constructor() {
         super() 
@@ -13,6 +20,8 @@ class App extends Component{
             searchfield: ''
         }
     }
+
+
 
 componentDidMount() {
     fetch('https://jsonplaceholder.typicode.com/users')
