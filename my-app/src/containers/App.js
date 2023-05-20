@@ -1,33 +1,28 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux'
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox'
-import './App.css'
 import Scroll from '../components/Scroll'
-import ErrorBoundry from '../components/ErrorBoundry'
+import './App.css'
 
-function App() {
-  const [robots, setRobots] = useState([])
-  const [searchField, setSearchField] = useState('')
-  const [count, setCount] = useState(0)
+import { setSearchField, requestRobots } from '../actions';
 
-useEffect(()=> {
-  fetch('https://jsonplaceholder.typicode.com/users')
-    .then(response=> response.json())
-    .then(users => {setRobots( users )});
-    console.log(count)
-},[count])
+// import ErrorBoundry from '../components/ErrorBoundry'
 
-const onSearchChange = (event) => {
-  setSearchField( event.target.value )
-}
+function App(props) {  
+  const [count, setCount] = useState(0) 
 
-console.log(searchField)
+useEffect(() => {
+  props.onRequestRobots()
+},[])
 
-const filteredRobots = robots.filter(robot => {
-  return robot.name.toLowerCase().includes(searchField.toLowerCase());
-  })
+const { searchField, onSearchChange, robots, isPending } = props;
+const filteredRobots = robots.filter((robot) => {
+  const robotName = robot.name.toLowerCase();
+  return robotName.includes(searchField.toLowerCase());
+  });
 
-  return !robots.length ?
+  return isPending ?
   <h1>Loading</h1> :
   (
     <div className='tc'>
@@ -41,6 +36,21 @@ const filteredRobots = robots.filter(robot => {
   );
 }
 
+const mapStateToProps = (state) => {
+  return {
+    searchField: state.searchRobots.searchField,
+    robots: state.requestRobots.robots,
+    isPending: state.requestRobots.isPending,
+    error: state.requestRobots.error
+  };
+};
 
+// dispatch comes from redux which we use to dispatch the action to the reducer
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
+    onRequestRobots: () => requestRobots(dispatch)
+  };
+};
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
