@@ -6,16 +6,12 @@ import Scroll from '../components/Scroll'
 import './App.css'
 
 import { setSearchField } from '../actions';
-import { useSelector, useDispatch } from 'react-redux';
+
 // import ErrorBoundry from '../components/ErrorBoundry'
 
-function App() {
+function App(props) {
   const [robots, setRobots] = useState([])  
-  const [count, setCount] = useState(0)
-  
-  // These below are hooks that are recommended instead of mapStateToProps and mapDispatchToProps
-  const searchField = useSelector((state) => state.searchField);
-  const dispatch = useDispatch();
+  const [count, setCount] = useState(0) 
 
 useEffect(()=> {  
   
@@ -30,8 +26,8 @@ useEffect(()=> {
 // console.log(useSelector((state) => state.searchField));
 
 const filteredRobots = robots.filter((robot) => {
-  const robotName = robot.name && robot.name.toLowerCase();
-  return robotName && robotName.includes(searchField.toLowerCase());
+  const robotName = robot.name.toLowerCase();
+  return robotName.includes(props.searchField.toLowerCase());
   });
 
   return !robots.length ?
@@ -40,7 +36,7 @@ const filteredRobots = robots.filter((robot) => {
     <div className='tc'>
       <h1 className='f1'>RoboFriends</h1>
       <button onClick={()=>setCount(count+1)}>Click Me!</button>
-      <SearchBox searchChange={(event) => dispatch(setSearchField(event.target.value))}/>
+      <SearchBox searchChange={props.onSearchChange}/>
       <Scroll>
         <CardList robots={filteredRobots} />
       </Scroll>
@@ -48,6 +44,16 @@ const filteredRobots = robots.filter((robot) => {
   );
 }
 
+const mapStateToProps = (state) => {
+  return {
+    searchField: state.searchField,
+  };
+};
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
+  };
+};
 
-export default connect()(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
