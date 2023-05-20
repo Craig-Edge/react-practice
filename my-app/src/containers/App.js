@@ -13,7 +13,7 @@ function App() {
   const [robots, setRobots] = useState([])  
   const [count, setCount] = useState(0)
   
-  // These below 
+  // These below are hooks that are recommended instead of mapStateToProps and mapDispatchToProps
   const searchField = useSelector((state) => state.searchField);
   const dispatch = useDispatch();
 
