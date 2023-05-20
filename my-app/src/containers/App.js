@@ -5,38 +5,30 @@ import SearchBox from '../components/SearchBox'
 import Scroll from '../components/Scroll'
 import './App.css'
 
-import { setSearchField } from '../actions';
+import { setSearchField, requestRobots } from '../actions';
 
 // import ErrorBoundry from '../components/ErrorBoundry'
 
-function App(props) {
-  const [robots, setRobots] = useState([])  
+function App(props) {  
   const [count, setCount] = useState(0) 
 
-useEffect(()=> {  
-  
-  fetch('https://jsonplaceholder.typicode.com/users')
-    .then(response=> response.json())
-    .then(users => {
-      setRobots( users )
-    });
-    console.log(count)
-},[count])
+useEffect(() => {
+  props.onRequestRobots()
+},[])
 
-// console.log(useSelector((state) => state.searchField));
-
+const { searchField, onSearchChange, robots, isPending } = props;
 const filteredRobots = robots.filter((robot) => {
   const robotName = robot.name.toLowerCase();
-  return robotName.includes(props.searchField.toLowerCase());
+  return robotName.includes(searchField.toLowerCase());
   });
 
-  return !robots.length ?
+  return isPending ?
   <h1>Loading</h1> :
   (
     <div className='tc'>
       <h1 className='f1'>RoboFriends</h1>
       <button onClick={()=>setCount(count+1)}>Click Me!</button>
-      <SearchBox searchChange={props.onSearchChange}/>
+      <SearchBox searchChange={onSearchChange}/>
       <Scroll>
         <CardList robots={filteredRobots} />
       </Scroll>
@@ -46,13 +38,18 @@ const filteredRobots = robots.filter((robot) => {
 
 const mapStateToProps = (state) => {
   return {
-    searchField: state.searchField,
+    searchField: state.searchRobots.searchField,
+    robots: state.requestRobots.robots,
+    isPending: state.requestRobots.isPending,
+    error: state.requestRobots.error
   };
 };
 
+// dispatch comes from redux which we use to dispatch the action to the reducer
 const mapDispatchToProps = (dispatch) => {
   return {
     onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
+    onRequestRobots: () => requestRobots(dispatch)
   };
 };
 
