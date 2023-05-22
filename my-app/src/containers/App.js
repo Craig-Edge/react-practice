@@ -7,8 +7,6 @@ import './App.css'
 
 import { setSearchField, requestRobots } from '../actions';
 
-// import ErrorBoundry from '../components/ErrorBoundry'
-
 function App(props) {  
   const [count, setCount] = useState(0) 
 
